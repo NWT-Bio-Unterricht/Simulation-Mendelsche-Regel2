@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mendels Spaltungsregel &amp; der Zufall (F2-Generation) – Klasse 9</title>
+    <style>
+        /* ==========================================================================
+           1. DESIGN-TOKENS & FARBSYSTEM (Smartboard-optimiert, hoher Kontrast)
+           ========================================================================== */
+        :root {
+            --bg-app: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-subtle: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-color: #cbd5e1;
+
+            /* Violett/Lila für dominantes Allel A / Kopf / Lila Blüte */
+            --purple: #7c3aed;
+            --purple-hover: #6d28d9;
+            --purple-dark: #4c1d95;
+            --purple-bg: #f3e8ff;
+            --purple-border: #a855f7;
+
+            /* Schieferblau/Weiß für rezessives Allel a / Zahl / Weiße Blüte */
+            --white-accent: #334155;
+            --white-bg: #ffffff;
+            --white-border: #64748b;
+
+            /* Smaragdgrün für Sollwerte & Gesetz der großen Zahlen */
+            --emerald: #059669;
+            --emerald-dark: #065f46;
+            --emerald-bg: #ecfdf5;
+            --emerald-border: #34d399;
+
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 2px 5px rgba(15, 23, 42, 0.06);
+            --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.08);
+            --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* ==========================================================================
+           2. BASIS-LAYOUT & TYPOGRAFIE
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 3rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 1.25rem 1.5rem;
+        }
+
+        h1 { font-size: clamp(1.3rem, 2.3vw, 1.9rem); font-weight: 800; letter-spacing: -0.02em; }
+        h2 { font-size: 1.18rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+        h3 { font-size: 1.02rem; font-weight: 700; }
+
+        .flower-svg {
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        /* ==========================================================================
+           3. STICKY HEADER
+           ========================================================================== */
+        header {
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-badge {
+            background: var(--purple);
+            color: white;
+            font-weight: 800;
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .header-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.88rem;
+            border: 2px solid;
+        }
+
+        .pill-purple {
+            background: var(--purple-bg);
+            color: var(--purple-dark);
+            border-color: var(--purple-border);
+        }
+
+        .pill-white {
+            background: #ffffff;
+            color: var(--white-accent);
+            border-color: var(--white-border);
+        }
+
+        .pill-emerald {
+            background: var(--emerald-bg);
+            color: var(--emerald-dark);
+            border-color: var(--emerald-border);
+        }
+
+        /* ==========================================================================
+           4. KARTEN & HAUPT-GRID
+           ========================================================================== */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 1.35rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.25rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .step-badge {
+            background: var(--text-main);
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 800;
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (min-width: 1080px) {
+            .main-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        /* Kompaktes 2-Spalten-Innenlayout innerhalb einzelner Schritte */
+        .step-inner-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        @media (min-width: 860px) {
+            .step-inner-grid {
+                grid-template-columns: 1.15fr 0.85fr;
+            }
+        }
+
+        /* ==========================================================================
+           5. OBERER ERKLÄRBEREICH: P -> F1 -> F2, MÜNZE & 2x2 PUNNETT-QUADRAT
+           ========================================================================== */
+        .intro-card {
+            margin-top: 1.15rem;
+            border-top: 5px solid var(--purple);
+        }
+
+        .intro-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.15rem;
+        }
+
+        @media (min-width: 1024px) {
+            .intro-layout {
+                grid-template-columns: 1.35fr 1fr;
+                align-items: stretch;
+            }
+        }
+
+        /* Generationen-Leiste P -> F1 -> F2 */
+        .gen-flow {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.65rem;
+            margin-bottom: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            .gen-flow {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .gen-box {
+            background: var(--bg-subtle);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.7rem 0.8rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.35rem;
+        }
+
+        .gen-box.highlight-f2 {
+            background: var(--purple-bg);
+            border: 2px solid var(--purple);
+        }
+
+        .gen-tag {
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+        }
+
+        .gen-box.highlight-f2 .gen-tag {
+            color: var(--purple-dark);
+        }
+
+        .gen-visual {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        .gen-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+
+        /* Experiment-Regelbox */
+        .rule-box {
+            background: #faf5ff;
+            border: 1.5px solid #d8b4fe;
+            border-radius: var(--radius-md);
+            padding: 0.9rem 1.1rem;
+        }
+
+        .rule-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.6rem;
+            margin-top: 0.6rem;
+        }
+
+        @media (min-width: 768px) {
+            .rule-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .rule-item {
+            background: #ffffff;
+            border: 1px solid #e9d5ff;
+            border-radius: var(--radius-sm);
+            padding: 0.6rem 0.75rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.55rem;
+            font-size: 0.9rem;
+        }
+
+        .mini-item {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.68rem;
+            line-height: 1.05;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.2); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ==========================================================================
+           7. SCHRITT 1: KLASSENDATEN (10 DOPPEL-MÜNZWÜRFE)
+           ========================================================================== */
+        .ten-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 0.5rem;
+            margin: 0.75rem 0 0.25rem 0;
+        }
+
+        @media (max-width: 720px) {
+            .ten-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        .token-btn {
+            aspect-ratio: 1;
+            max-width: 78px;
+            width: 100%;
+            margin: 0 auto;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.12rem;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: var(--shadow-sm);
+            padding: 0.2rem;
+        }
+
+        .toggle-btn {
+            border: none;
+            background: transparent;
+            padding: 0.42rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .toggle-btn.active {
+            background: var(--purple);
+            color: #ffffff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .kpi-box {
+            background: var(--bg-subtle);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.8rem 0.9rem;
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .kpi-value {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.2;
+            margin-top: 0.2rem;
+        }
+
+        .kpi-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+            font-weight: 600;
+        }
+
+        /* Balkendiagramm */
+        .bar-chart-container {
+            margin: 1rem 0 1.5rem 0;
+        }
+
+        .bar-row {
+            margin-bottom: 1.25rem;
+        }
+
+        .bar-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+            font-size: 0.96rem;
+        }
+
+        .bar-track {
+            height: 38px;
+            background: #e2e8f0;
+            border-radius: var(--radius-sm);
+            position: relative;
+            overflow: visible;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: var(--radius-sm);
+            transition: width 0.25s ease-out;
+            display: flex;
+            align-items: center;
+            padding-left: 0.75rem;
+            font-weight: 800;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .target-marker {
+            position: absolute;
+            top: -6px;
+            bottom: -6px;
+            width: 3px;
+            border-left: 3px dashed var(--emerald-dark);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .target-marker::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--emerald);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 1px 7px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        /* HTML5 Canvas Liniendiagramm */
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            height: 330px;
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.5rem;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* ==========================================================================
+           10. DIDAKTIK-BOXEN & TOAST
+           ========================================================================== */
+        .didactic-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .didactic-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .info-box {
+            background: var(--bg-subtle);
+            border-left: 5px solid var(--purple);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.15rem;
+        }
+
+        .info-box.emerald-accent {
+            border-left-color: var(--emerald);
+        }
+
+        .info-box h3 {
+            margin-bottom: 0.4rem;
+            color: var(--text-main);
+        }
+
+        .info-box p {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #0f172a;
+            color: white;
+            padding: 0.85rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+            transform: translateY(160%);
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ======================================================================
+         HEADER
+         ====================================================================== -->
+    <header>
+        <div class="header-inner">
+            <div class="brand">
+                <span class="brand-badge">Biologie Klasse 9</span>
+                <div>
+                    <h1>Mendels Spaltungsregel &amp; der Zufall (F2-Generation)</h1>
+                </div>
+            </div>
+
+            <div class="header-pills" aria-label="Versuchsregeln im Überblick">
+                <span class="pill pill-purple">👑 Kopf = Allel A (Lila)</span>
+                <span class="pill pill-white">🔢 Zahl = Allel a (Weiß)</span>
+                <span class="pill pill-emerald">🪙 2 Münzen = 1 neue Erbsenblüte</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- ==================================================================
+             OBERER ERKLÄRBEREICH: NUR DIE VERSUCHSANLEITUNG (OHNE LÖSUNG VORWEG)
+             ================================================================== -->
+        <section class="card intro-card" aria-label="Versuchsanleitung für das Klassenzimmer">
+            <div class="card-header" style="margin-bottom: 0.85rem;">
+                <h2>🪙 Versuchsanleitung: 2 Münzen gleichzeitig werfen = 1 neue Erbsenblüte</h2>
+                <span class="step-badge" style="background: var(--purple);">Forschend entdecken · Klasse 9</span>
+            </div>
+
+            <div class="rule-box">
+                <h3 style="color: var(--purple-dark); font-size: 0.98rem;">So führt ihr das Doppel-Münzwurf-Experiment im Klassenzimmer durch:</h3>
+                <div class="rule-grid">
+                    <div class="rule-item"><span>🌱</span><span><strong>2 Münzen = 1 Nachkomme:</strong> Werft immer <strong>2 Münzen gleichzeitig</strong> (1. Münze = Vater, 2. Münze = Mutter).</span></div>
+                    <div class="rule-item"><span>🔤</span><span><strong>Münzseiten:</strong> <strong>👑 Kopf</strong> = Allel <strong>A</strong> (Lila) &nbsp;|&nbsp; <strong>🔢 Zahl</strong> = Allel <strong>a</strong> (Weiß).</span></div>
+                    <div class="rule-item"><span>🌸</span><span><strong>Blütenfarbe:</strong> <strong>Mindestens 1× Kopf</strong> (<code>AA</code>/<code>Aa</code>) = <strong>Lila</strong>. Nur <strong>2× Zahl</strong> (<code>aa</code>) = <strong>Weiß</strong>.</span></div>
+                    <div class="rule-item"><span>🔎</span><span><strong>Forschungsfrage:</strong> Bei welchem Verhältnis pendelt sich die Kurve bei vielen Versuchen ein?</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================================================================
+             HAUPT-ARBEITSBEREICH (SCHRITT 1 -> 2 -> 3 SAUBER UNTEREINANDER)
+             ================================================================== -->
+        <div class="main-grid">
+
+            <!-- SCHRITT 1: EIGENE KLASSENDATEN (10 DOPPEL-MÜNZWÜRFE) -->
+            <section class="card" aria-labelledby="step1-title">
+                <div class="card-header">
+                    <h2 id="step1-title">1. Eure 10 Doppel-Münzwürfe aus dem Klassenzimmer</h2>
+                    <span class="step-badge">Klasse: n = 10</span>
+                </div>
+
+                <p style="font-size: 0.92rem; color: var(--text-muted);">
+                    Werft im Klassenzimmer 10-mal je <strong>2 Münzen gleichzeitig</strong>. Klickt die 10 Blüten an (Lila = mind. 1× Kopf; Weiß = 2× Zahl) oder nutzt den Regler:
+                </p>
+
+                <!-- 10 klickbare Blüten-Buttons in einer sauberen Reihe -->
+                <div class="ten-grid" id="tenTokensGrid"></div>
+
+                <div class="step-inner-grid" style="margin-top: 0.9rem; align-items: center;">
+                    <!-- Synchronisierter Schieberegler -->
+                    <div class="slider-box" style="margin-bottom: 0;">
+                        <div class="slider-header">
+                            <span class="count-pill purple" id="sliderLabelPurple">🌸 Lila: 7</span>
+                            <span class="count-pill white" id="sliderLabelWhite">🤍 Weiß: 3</span>
+                        </div>
+                        <input type="range" id="classSlider" min="0" max="10" value="7" aria-label="Anzahl Lila Blüten aus 10 Doppel-Würfen" oninput="updateFromSlider(this.value)">
+                    </div>
+
+                    <div class="btn-stack">
+                        <button class="btn btn-primary btn-full" onclick="applyClassData()">
+                            ✅ 10 Klassendaten in Statistik übernehmen
+                        </button>
+                        <button class="btn btn-secondary btn-full" onclick="startWithoutClassData()">
+                            🚀 Direkt bei 0 starten
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCHRITT 2: DER ZEITRAFFER -->
+            <section class="card" aria-labelledby="step2-title">
+                <div class="card-header">
+                    <h2 id="step2-title">2. Der Zeitraffer (Weitere Doppel-Würfe simulieren)</h2>
+                    <span class="step-badge">Bis n = 10.000</span>
+                </div>
+
+                <div class="step-inner-grid">
+                    <!-- Linke Innen-Spalte: Steuerung & Tempo -->
+                    <div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.7rem;">
+                            Füge einzelne Doppel-Würfe oder ganze Serien hinzu:
+                        </p>
+
+                        <!-- Einzel- und Sprung-Buttons -->
+                        <div class="controls-bar" style="grid-template-columns: repeat(5, 1fr);">
+                            <button class="btn btn-secondary" onclick="addTrials(1)">+1</button>
+                            <button class="btn btn-secondary" onclick="addTrials(10)">+10</button>
+                            <button class="btn btn-secondary" onclick="addTrials(100)">+100</button>
+                            <button class="btn btn-secondary" onclick="addTrials(500)">+500</button>
+                            <button class="btn btn-secondary" onclick="addTrials(1000)">+1.000</button>
+                        </div>
+
+                        <!-- Auto-Play Zeitraffer -->
+                        <div class="timelapse-panel" style="margin-bottom: 0;">
+                            <button class="btn btn-emerald" id="btnPlayPause" onclick="toggleTimelapse()">
+                                ▶ Zeitraffer Start
+                            </button>
+                            <div class="speed-control">
+                                <label for="speedSelect">Tempo:</label>
+                                <select id="speedSelect" onchange="restartTimelapseIfRunning()">
+                                    <option value="veryslow">🐢 Sehr langsam (1 / 1,2 Sek.)</option>
+                                    <option value="slow">🚶 Langsam (ca. 6 / Sek.)</option>
+                                    <option value="medium" selected>🏃 Mittel (ca. 50 / Sek.)</option>
+                                    <option value="fast">⚡ Schnell (Zeitraffer)</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-danger" onclick="resetSimulation()" title="Alle Versuche löschen">
+                                ↺ Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Rechte Innen-Spalte: Live-Einzelschritt & letzte 12 Blüten -->
+                    <div>
+                        <!-- Live-Einzelschritt-Anzeige -->
+                        <div class="single-draw-card" id="singleDrawCard">
+                            <div class="draw-header-line">
+                                <span id="drawTitle">🔍 Live-Einzelschritt (2 Münzen)</span>
+                                <span id="drawSourceBadge">Bereit</span>
+                            </div>
+                            <div id="singleDrawBody">
+                                <p style="font-size: 0.86rem; color: var(--text-muted);">
+                                    Klicke auf <strong>„+1“</strong> oder wähle <strong>„🐢 Sehr langsam“</strong>, um beide Münzen einzeln fallen zu sehen.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Historien-Leiste der letzten 12 gezogenen Blüten -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.84rem; font-weight: 800; margin-bottom: 0.4rem;">
+                                <span>🌸 Letzte 12 gezogene F2-Blüten:</span>
+                                <span id="lastResultBadge" style="color: var(--purple);">–</span>
+                            </div>
+                            <div class="live-arena" id="liveArena" style="min-height: 76px;">
+                                <div class="arena-placeholder" style="padding: 0.6rem 0;">
+                                    Noch keine F2-Nachkommen erzeugt.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCHRITT 3: LIVE-STATISTIK & GESETZ DER GROSSEN ZAHLEN -->
+            <section class="card" aria-labelledby="step3-title">
+                <div class="card-header">
+                    <h2 id="step3-title">3. Live-Statistik &amp; Gesetz der großen Zahlen</h2>
+                    <div class="view-toggle" role="group" aria-label="Diagrammansicht wählen">
+                        <button type="button" class="toggle-btn active" id="btnViewPheno" onclick="setChartView('phenotype')">
+                            Phänotyp (3 : 1)
+                        </button>
+                        <button type="button" class="toggle-btn" id="btnViewGeno" onclick="setChartView('genotype')">
+                            Genotyp (1 : 2 : 1)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Kennzahlen (KPIs) -->
+                <div class="kpi-row">
+                    <div class="kpi-box">
+                        <div class="kpi-label">Versuche (n)</div>
+                        <div class="kpi-value" id="kpiTotal">0</div>
+                        <div class="kpi-sub" id="kpiPhase">Warte auf Start...</div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label">🌸 Lila Blüten</div>
+                        <div class="kpi-value" id="kpiPurplePct" style="color: var(--purple);">– %</div>
+                        <div class="kpi-sub" id="kpiPurpleSub">Mind. 1× Kopf (AA / Aa)</div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label">🤍 Weiße Blüten</div>
+                        <div class="kpi-value" id="kpiWhitePct">– %</div>
+                        <div class="kpi-sub" id="kpiWhiteSub">2× Zahl (aa)</div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label" id="kpiFourthLabel">Verhältnis Lila : Weiß</div>
+                        <div class="kpi-value" id="kpiDiff" style="color: var(--emerald-dark);">–</div>
+                        <div class="kpi-sub" id="kpiFourthSub">Beobachte den Trend!</div>
+                    </div>
+                </div>
+
+                <!-- Umschaltbares Balkendiagramm (Phänotyp oder Genotyp) -->
+                <div class="bar-chart-container" id="barChartContainer"></div>
+
+                <!-- Natives HTML5-Canvas-Liniendiagramm -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.45rem;">
+                        <h3>📈 Verlauf des Lila-Anteils (Gesetz der großen Zahlen)</h3>
+                        <span id="chartLegendHint" style="font-size: 0.82rem; color: var(--text-muted); font-weight: 800;">
+                            Orange Punkte = Eure 10 Klassendaten
+                        </span>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="historyCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Kompakte Beobachtungshilfe direkt im Statistik-Block -->
+                <div class="didactic-grid" style="margin-top: 1.25rem;">
+                    <div class="info-box">
+                        <h3>🎲 1. Was passiert bei den ersten 10 Klassenwürfen?</h3>
+                        <p>Bei wenigen Versuchen hat der Zufall großen Spielraum (z. B. 6 : 4 oder 9 : 1), weil jede Münze bei jedem Wurf neu entscheidet und kein Gedächtnis hat.</p>
+                    </div>
+                    <div class="info-box emerald-accent">
+                        <h3>📊 2. Was passiert bei 1.000 bis 10.000 Versuchen?</h3>
+                        <p>Beobachtet die violette Linie im Diagramm: Bei welcher Prozentzahl beruhigt sich die Kurve? Deckt danach unten die Auflösung auf!</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================================================================
+             SCHRITT 4 (GANZ UNTEN AM ENDE): VERDECKTE AUFLÖSUNG & KREUZUNGSSCHEMA
+             ================================================================== -->
+        <section class="card" style="border-top: 5px solid var(--emerald); margin-top: 0.5rem;" aria-labelledby="step4-title">
+            <div class="card-header">
+                <h2 id="step4-title">4. Biologische Auflösung &amp; Kreuzungsschema (P ➔ F1 ➔ F2)</h2>
+                <span class="step-badge" id="revealStatusBadge" style="background: var(--text-muted);">Noch verdeckt</span>
+            </div>
+
+            <div id="revealCoverBox" style="text-align: center; padding: 1.25rem 1rem; background: var(--bg-subtle); border: 2px dashed var(--border-color); border-radius: var(--radius-md);">
+                <p style="font-size: 0.98rem; color: var(--text-muted); max-width: 720px; margin: 0 auto 1rem auto;">
+                    Habt ihr genug Doppel-Münzwürfe simuliert und beobachtet, bei welchem Wert sich die Kurve einpendelt? Dann deckt jetzt die biologische Erklärung hinter dem Versuch auf:
+                </p>
+                <button type="button" class="btn btn-emerald" style="font-size: 1.05rem; padding: 0.9rem 1.4rem;" onclick="toggleResolution(true)">
+                    🔍 Auflösung &amp; Kreuzungsschema aufdecken: Warum pendelt es sich immer bei 3 : 1 ein?
+                </button>
+            </div>
+
+            <div id="resolutionContent" style="display: none;">
+                <div class="intro-layout" style="margin-bottom: 1rem;">
+                    <!-- Linke Seite: Generationenfolge P -> F1 -> F2 -->
+                    <div>
+                        <div class="gen-flow">
+                            <div class="gen-box">
+                                <span class="gen-tag">1. Elterngeneration (P)</span>
+                                <div class="gen-visual" id="genPVisual"></div>
+                                <p class="gen-desc">Reinerbig Lila (<strong>AA</strong>) × Reinerbig Weiß (<strong>aa</strong>)</p>
+                            </div>
+
+                            <div class="gen-box">
+                                <span class="gen-tag">2. Tochtergeneration (F1)</span>
+                                <div class="gen-visual" id="genF1Visual"></div>
+                                <p class="gen-desc">1. Mendelsche Regel (Uniformitätsregel): 100 % mischerbig Lila (<strong>Aa</strong>)</p>
+                            </div>
+
+                            <div class="gen-box highlight-f2">
+                                <span class="gen-tag">3. Enkelgeneration (F2)</span>
+                                <div class="gen-visual" id="genF2Visual"></div>
+                                <p class="gen-desc">Kreuzung <strong>Aa × Aa</strong> (genau unser Doppel-Münzwurf!)</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box emerald-accent" style="background: var(--emerald-bg); border: 1.5px solid var(--emerald-border); border-left: 6px solid var(--emerald);">
+                            <h3 style="color: var(--emerald-dark); font-size: 1.05rem;">📌 Merksatz – 2. Mendelsche Regel (Spaltungsregel):</h3>
+                            <p style="color: var(--text-main); font-size: 0.95rem; margin-top: 0.35rem;">
+                                Kreuzt man die mischerbigen Individuen der F1-Generation (<strong>Aa × Aa</strong>) untereinander, spalten sich die Merkmale in der <strong>F2-Generation</strong> stets in einem festen Zahlenverhältnis auf:
+                            </p>
+                            <ul style="margin: 0.5rem 0 0 1.25rem; font-size: 0.94rem; color: var(--text-main); font-weight: 700;">
+                                <li>Phänotyp (Erscheinungsbild): <span style="color: var(--purple-dark);">3 : 1</span> (75 % dominant Lila : 25 % rezessiv Weiß)</li>
+                                <li>Genotyp (Erbbild): <span style="color: var(--emerald-dark);">1 : 2 : 1</span> (25 % AA : 50 % Aa : 25 % aa)</li>
+                            </ul>
+                            <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.45rem;">
+                                <strong>Bezug zum Zufall:</strong> Da beide Eltern jeweils zu 50 % <code>A</code> oder <code>a</code> vererben, wirkt der Zufall wie bei zwei Münzen. Erst bei vielen Nachkommen wird das 3 : 1-Verhältnis stabil sichtbar (<strong>Gesetz der großen Zahlen</strong>).
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rechte Seite: 2x2 Kombinationsquadrat (Punnett-Quadrat) -->
+                    <div class="punnett-wrapper">
+                        <div class="punnett-title">
+                            <span>📐 2×2-Kombinationsquadrat (F1 × F1)</span>
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">4 gleich wahrscheinliche Fälle</span>
+                        </div>
+
+                        <table class="punnett-table" aria-label="Punnett-Quadrat für Aa mal Aa">
+                            <thead>
+                                <tr>
+                                    <th style="background: transparent; color: var(--text-muted); font-size: 0.75rem;">Mutter ↓ \ Vater →</th>
+                                    <th class="head-a">1. Münze: 👑 Kopf (A)</th>
+                                    <th class="head-r">1. Münze: 🔢 Zahl (a)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th class="head-a">2. Münze:<br>👑 Kopf (A)</th>
+                                    <td class="punnett-cell cell-purple" id="punnettAA"></td>
+                                    <td class="punnett-cell cell-purple" id="punnettaA"></td>
+                                </tr>
+                                <tr>
+                                    <th class="head-r">2. Münze:<br>🔢 Zahl (a)</th>
+                                    <td class="punnett-cell cell-purple" id="punnettAa"></td>
+                                    <td class="punnett-cell cell-white" id="punnettaa"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="punnett-summary">
+                            3 von 4 Feldern = Lila (75 %) &nbsp;|&nbsp; 1 von 4 Feldern = Weiß (25 %)
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: right;">
+                    <button type="button" class="btn btn-secondary" onclick="toggleResolution(false)">
+                        🙈 Auflösung wieder verdecken
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Benachrichtigungs-Banner (statt alert) -->
+    <div class="toast" id="toastBox"></div>
+
+    <!-- ======================================================================
+         JAVASCRIPT: DOPPEL-MÜNZWURF-LOGIK, UI & CANVAS-VISUALISIERUNG
+         ====================================================================== -->
+    <script>
+        /**
+         * SVG-BLÜTEN-GENERATOR (LILA & WEISS)
+         */
+        function getFlowerSVG(type, size = 26) {
+            const petalColor = type === 'purple' ? '#7c3aed' : '#ffffff';
+            const strokeColor = type === 'purple' ? '#4c1d95' : '#475569';
+            const centerColor = type === 'purple' ? '#facc15' : '#f59e0b';
+
+            return `
+                <svg class="flower-svg" width="${size}" height="${size}" viewBox="0 0 40 40" aria-hidden="true">
+                    <g stroke="${strokeColor}" stroke-width="2" fill="${petalColor}">
+                        <circle cx="20" cy="9" r="7.5" />
+                        <circle cx="30.5" cy="16.5" r="7.5" />
+                        <circle cx="26.5" cy="29" r="7.5" />
+                        <circle cx="13.5" cy="29" r="7.5" />
+                        <circle cx="9.5" cy="16.5" r="7.5" />
+                    </g>
+                    <circle cx="20" cy="20" r="6" fill="${centerColor}" stroke="${strokeColor}" stroke-width="1.5" />
+                </svg>
+            `;
+        }
+
+        /**
+         * ZENTRALER ANWENDUNGSZUSTAND
+         */
+        const state = {
+            // Voreinstellung der 10 Klassen-Doppelwürfe (z. B. 7x Lila, 3x Weiß)
+            classTen: [true, true, false, true, true, true, false, true, false, true],
+
+            // Gesamtzähler
+            total: 0,
+            countAA: 0, // Reinerbig Lila (Kopf + Kopf)
+            countAa: 0, // Mischerbig Lila (Kopf + Zahl oder Zahl + Kopf)
+            countaa: 0, // Reinerbig Weiß (Zahl + Zahl)
+
+            // Verlauf für Liniendiagramm: { n, pct, isClassData }
+            history: [],
+
+            // Letzte 12 gezogene F2-Blüten
+            recentItems: [],
+
+            // Aktuellster Einzelversuch für die Detailanzeige
+            lastDraw: null,
+
+            // Balkendiagramm-Modus: 'phenotype' oder 'genotype'
+            chartView: 'phenotype',
+
+            // Ist die Auflösung (Schritt 4 + Soll-Linien) bereits aufgedeckt?
+            isResolutionRevealed: false,
+
+            // Zeitraffer-Steuerung
+            timerId: null,
+            maxAutoTrials: 10000
+        };
+
+        /**
+         * KLASSENDATEN-EINGABE (10 DOPPEL-MÜNZWÜRFE) RENDERN & STEUERN
+         */
+        function renderTenTokens() {
+            const grid = document.getElementById('tenTokensGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            let purpleCount = 0;
+
+            state.classTen.forEach((isPurple, idx) => {
+                if (isPurple) purpleCount++;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `token-btn ${isPurple ? 'token-purple' : 'token-white'}`;
+                btn.setAttribute('aria-label', `Wurf ${idx + 1}: ${isPurple ? 'Lila Blüte' : 'Weiße Blüte'}`);
+                btn.innerHTML = `
+                    ${getFlowerSVG(isPurple ? 'purple' : 'white', 26)}
+                    <small>#${idx + 1} ${isPurple ? 'Lila' : 'Weiß'}</small>
+                `;
+                btn.onclick = () => {
+                    state.classTen[idx] = !state.classTen[idx];
+                    renderTenTokens();
+                };
+                grid.appendChild(btn);
+            });
+
+            const whiteCount = 10 - purpleCount;
+            document.getElementById('sliderLabelPurple').textContent = `🌸 Lila: ${purpleCount}`;
+            document.getElementById('sliderLabelWhite').textContent = `🤍 Weiß: ${whiteCount}`;
+            document.getElementById('classSlider').value = purpleCount;
+        }
+
+        function updateFromSlider(val) {
+            const purpleCount = parseInt(val, 10);
+            state.classTen = Array.from({ length: 10 }, (_, i) => i < purpleCount);
+            renderTenTokens();
+        }
+
+        function applyClassData() {
+            resetSimulation(false);
+            state.classTen.forEach(isPurple => {
+                if (isPurple) {
+                    // Lila = mindestens 1x Kopf (zufällig AA [1/3] oder Aa [2/3] unter den Lila-Fällen)
+                    const r = Math.random();
+                    if (r < 1 / 3) {
+                        recordTrial(true, true, true);
+                    } else if (r < 2 / 3) {
+                        recordTrial(true, false, true);
+                    } else {
+                        recordTrial(false, true, true);
+                    }
+                } else {
+                    // Weiß = immer 2x Zahl (aa)
+                    recordTrial(false, false, true);
+                }
+            });
+            updateUI();
+            const pCount = state.classTen.filter(Boolean).length;
+            showToast(`✅ Eure 10 Klassenwürfe (${pCount}× Lila, ${10 - pCount}× Weiß) wurden übernommen!`);
+        }
+
+        function startWithoutClassData() {
+            resetSimulation(false);
+            showToast('🚀 Simulation auf 0 gesetzt – startet jetzt den Zeitraffer!');
+        }
+
+        /**
+         * EINEN EINZELNEN DOPPEL-MÜNZWURF (1 F2-NACHKOMME) ERZEUGEN & VERBUCHEN
+         */
+        function recordTrial(forcedCoin1 = null, forcedCoin2 = null, isClassData = false) {
+            const coin1 = forcedCoin1 !== null ? forcedCoin1 : Math.random() < 0.5;
+            const coin2 = forcedCoin2 !== null ? forcedCoin2 : Math.random() < 0.5;
+
+            let genotype = 'aa';
+            if (coin1 && coin2) {
+                genotype = 'AA';
+                state.countAA++;
+            } else if (coin1 || coin2) {
+                genotype = 'Aa';
+                state.countAa++;
+            } else {
+                genotype = 'aa';
+                state.countaa++;
+            }
+
+            const isPurple = genotype !== 'aa';
+            state.total++;
+
+            const purpleTotal = state.countAA + state.countAa;
+            const currentPctPurple = (purpleTotal / state.total) * 100;
+
+            state.history.push({
+                n: state.total,
+                pct: currentPctPurple,
+                isClassData: isClassData
+            });
+
+            const drawObj = {
+                n: state.total,
+                coin1: coin1,
+                coin2: coin2,
+                genotype: genotype,
+                isPurple: isPurple,
+                isClassData: isClassData
+            };
+
+            state.lastDraw = drawObj;
+            state.recentItems.push(drawObj);
+            if (state.recentItems.length > 12) {
+                state.recentItems.shift();
+            }
+        }
+
+        /**
+         * AUFLÖSUNG & KREUZUNGSSCHEMA EIN- / AUSBLENDEN
+         */
+        function toggleResolution(reveal) {
+            state.isResolutionRevealed = reveal;
+
+            document.getElementById('revealCoverBox').style.display = reveal ? 'none' : 'block';
+            document.getElementById('resolutionContent').style.display = reveal ? 'block' : 'none';
+
+            const badge = document.getElementById('revealStatusBadge');
+            badge.textContent = reveal ? 'Aufgedeckt (3 : 1)' : 'Noch verdeckt';
+            badge.style.background = reveal ? 'var(--emerald)' : 'var(--text-muted)';
+
+            updateUI();
+
+            if (reveal) {
+                showToast('🔍 Auflösung aufgedeckt: Soll-Linien sind jetzt auch in den Diagrammen sichtbar!');
+                document.getElementById('resolutionContent').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        /**
+         * MEHRERE VERSUCHE AUF EINMAL HINZUFÜGEN
+         */
+        function addTrials(count) {
+            for (let i = 0; i < count; i++) {
+                recordTrial(null, null, false);
+            }
+            updateUI();
+        }
+
+        /**
+         * ZEITRAFFER (AUTO-PLAY) STEUERUNG
+         */
+        function toggleTimelapse() {
+            if (state.timerId !== null) {
+                stopTimelapse();
+            } else {
+                startTimelapse();
+            }
+        }
+
+        function startTimelapse() {
+            const btn = document.getElementById('btnPlayPause');
+            btn.innerHTML = '⏸ Pause';
+            btn.style.backgroundColor = '#dc2626';
+
+            const speed = document.getElementById('speedSelect').value;
+            let intervalMs = 40;
+            let batchSize = 2;
+
+            if (speed === 'veryslow') {
+                intervalMs = 1200; // 🐢 Sehr langsam: 1 Versuch pro 1,2 Sekunden
+                batchSize = 1;
+            } else if (speed === 'slow') {
+                intervalMs = 160;  // 🚶 Langsam: ca. 6 Versuche pro Sekunde
+                batchSize = 1;
+            } else if (speed === 'medium') {
+                intervalMs = 40;   // 🏃 Mittel: ca. 50 Versuche pro Sekunde
+                batchSize = 2;
+            } else {
+                intervalMs = 25;   // ⚡ Schnell: Zeitraffer bis 10.000
+                batchSize = 40;
+            }
+
+            state.timerId = setInterval(() => {
+                if (state.total >= state.maxAutoTrials) {
+                    stopTimelapse();
+                    showToast(`🏁 Zeitraffer bei n = ${state.maxAutoTrials.toLocaleString('de-DE')} Versuchen beendet.`);
+                    return;
+                }
+                const remaining = state.maxAutoTrials - state.total;
+                addTrials(Math.min(batchSize, remaining));
+            }, intervalMs);
+        }
+
+        function stopTimelapse() {
+            if (state.timerId !== null) {
+                clearInterval(state.timerId);
+                state.timerId = null;
+            }
+            const btn = document.getElementById('btnPlayPause');
+            btn.innerHTML = '▶ Zeitraffer Start';
+            btn.style.backgroundColor = '';
+        }
+
+        function restartTimelapseIfRunning() {
+            if (state.timerId !== null) {
+                stopTimelapse();
+                startTimelapse();
+            }
+        }
+
+        /**
+         * SIMULATION ZURÜCKSETZEN
+         */
+        function resetSimulation(showMsg = true) {
+            stopTimelapse();
+            state.total = 0;
+            state.countAA = 0;
+            state.countAa = 0;
+            state.countaa = 0;
+            state.history = [];
+            state.recentItems = [];
+            state.lastDraw = null;
+            updateUI();
+            if (showMsg) showToast('🔄 Simulation wurde vollständig zurückgesetzt.');
+        }
+
+        /**
+         * ANSICHT IM BALKEN-DIAGRAMM UMSCHALTEN (PHÄNOTYP 3:1 VS. GENOTYP 1:2:1)
+         */
+        function setChartView(view) {
+            state.chartView = view;
+            document.getElementById('btnViewPheno').classList.toggle('active', view === 'phenotype');
+            document.getElementById('btnViewGeno').classList.toggle('active', view === 'genotype');
+            renderBarChart();
+        }
+
+        /**
+         * GESAMTE OBERFLÄCHE AKTUALISIEREN
+         */
+        function updateUI() {
+            renderSingleDrawCard();
+            renderLiveArena();
+            updateKPIs();
+            renderBarChart();
+            drawHistoryChart();
+        }
+
+        /**
+         * LIVE-EINZELSCHRITT-ANZEIGE RENDERN
+         */
+        function renderSingleDrawCard() {
+            const card = document.getElementById('singleDrawCard');
+            const badge = document.getElementById('drawSourceBadge');
+            const body = document.getElementById('singleDrawBody');
+
+            if (!state.lastDraw) {
+                badge.textContent = 'Bereit';
+                body.innerHTML = `
+                    <p style="font-size: 0.88rem; color: var(--text-muted);">
+                        Klicke auf <strong>„+1 Versuch“</strong> oder wähle <strong>„🐢 Sehr langsam“</strong>, um jeden Doppel-Münzwurf einzeln mitzuverfolgen.
+                    </p>
+                `;
+                return;
+            }
+
+            const d = state.lastDraw;
+            badge.textContent = `${d.isClassData ? 'Klassenversuch' : 'Simulation'} #${d.n}`;
+
+            const c1Class = d.coin1 ? 'coin-head' : 'coin-tail';
+            const c1Label = d.coin1 ? '👑 Kopf (A)' : '🔢 Zahl (a)';
+            const c2Class = d.coin2 ? 'coin-head' : 'coin-tail';
+            const c2Label = d.coin2 ? '👑 Kopf (A)' : '🔢 Zahl (a)';
+
+            const outClass = d.isPurple ? 'out-purple' : 'out-white';
+            const outLabel = d.isPurple ? 'Lila Blüte' : 'Weiße Blüte';
+
+            body.innerHTML = `
+                <div class="coin-equation">
+                    <div class="coin-box ${c1Class}">
+                        <span>1. Münze (Vater)</span>
+                        <strong>${c1Label}</strong>
+                    </div>
+                    <span class="eq-arrow">+</span>
+                    <div class="coin-box ${c2Class}">
+                        <span>2. Münze (Mutter)</span>
+                        <strong>${c2Label}</strong>
+                    </div>
+                    <span class="eq-arrow">➔</span>
+                    <div class="outcome-box ${outClass}">
+                        ${getFlowerSVG(d.isPurple ? 'purple' : 'white', 26)}
+                        <div>
+                            <div style="font-size: 0.76rem; opacity: 0.85;">Genotyp ${d.genotype}</div>
+                            <div>${outLabel}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            card.classList.remove('pulse');
+            void card.offsetWidth;
+            card.classList.add('pulse');
+        }
+
+        /**
+         * HISTORIEN-LEISTE DER LETZTEN 12 GEZOGENEN BLÜTEN RENDERN
+         */
+        function renderLiveArena() {
+            const arena = document.getElementById('liveArena');
+            const badge = document.getElementById('lastResultBadge');
+
+            if (state.recentItems.length === 0) {
+                arena.innerHTML = `<div class="arena-placeholder">Noch keine F2-Nachkommen erzeugt.<br>Übernehmt oben eure 10 Klassenwürfe oder startet die Simulation.</div>`;
+                badge.textContent = '–';
+                return;
+            }
+
+            arena.innerHTML = '';
+            const last = state.recentItems[state.recentItems.length - 1];
+            badge.textContent = `Zuletzt: ${last.genotype} (${last.isPurple ? 'Lila' : 'Weiß'})`;
+
+            state.recentItems.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'mini-item';
+
+                if (item.isPurple) {
+                    el.style.background = '#f3e8ff';
+                    el.style.color = '#4c1d95';
+                    el.style.borderColor = '#7c3aed';
+                } else {
+                    el.style.background = '#ffffff';
+                    el.style.color = '#334155';
+                    el.style.borderColor = '#64748b';
+                }
+
+                el.innerHTML = `${getFlowerSVG(item.isPurple ? 'purple' : 'white', 21)}<span>${item.genotype}</span>`;
+                el.title = `Münze 1: ${item.coin1 ? 'Kopf (A)' : 'Zahl (a)'} + Münze 2: ${item.coin2 ? 'Kopf (A)' : 'Zahl (a)'} ➔ ${item.genotype}`;
+                arena.appendChild(el);
+            });
+        }
+
+        /**
+         * KENNZAHLEN (KPIs) AKTUALISIEREN
+         */
+        function updateKPIs() {
+            const n = state.total;
+            document.getElementById('kpiTotal').textContent = n.toLocaleString('de-DE');
+
+            const purpleSub = document.getElementById('kpiPurpleSub');
+            const whiteSub = document.getElementById('kpiWhiteSub');
+            const fourthLabel = document.getElementById('kpiFourthLabel');
+            const fourthSub = document.getElementById('kpiFourthSub');
+
+            if (state.isResolutionRevealed) {
+                purpleSub.textContent = 'Sollwert: 75,0 % (3/4)';
+                whiteSub.textContent = 'Sollwert: 25,0 % (1/4)';
+                fourthLabel.textContent = 'Abweichung vom Soll';
+                fourthSub.textContent = 'Ziel: 0,0 % Differenz';
+            } else {
+                purpleSub.textContent = 'Mind. 1× Kopf (AA / Aa)';
+                whiteSub.textContent = '2× Zahl (aa)';
+                fourthLabel.textContent = 'Verhältnis Lila : Weiß';
+                fourthSub.textContent = 'Beobachte den Trend!';
+            }
+
+            if (n === 0) {
+                document.getElementById('kpiPhase').textContent = 'Warte auf Start...';
+                document.getElementById('kpiPurplePct').textContent = '– %';
+                document.getElementById('kpiWhitePct').textContent = '– %';
+                document.getElementById('kpiDiff').textContent = '–';
+                return;
+            }
+
+            const purpleCount = state.countAA + state.countAa;
+            const pctPurple = (purpleCount / n) * 100;
+            const pctWhite = (state.countaa / n) * 100;
+
+            document.getElementById('kpiPurplePct').textContent = `${pctPurple.toFixed(1).replace('.', ',')} %`;
+            document.getElementById('kpiWhitePct').textContent = `${pctWhite.toFixed(1).replace('.', ',')} %`;
+
+            if (state.isResolutionRevealed) {
+                const diff = Math.abs(pctPurple - 75.0);
+                document.getElementById('kpiDiff').textContent = `± ${diff.toFixed(1).replace('.', ',')} %`;
+            } else if (state.countaa > 0) {
+                const ratio = (purpleCount / state.countaa).toFixed(2).replace('.', ',');
+                document.getElementById('kpiDiff').textContent = `${ratio} : 1`;
+            } else {
+                document.getElementById('kpiDiff').textContent = `${purpleCount} : 0`;
+            }
+
+            const phaseEl = document.getElementById('kpiPhase');
+            if (n <= 15) {
+                phaseEl.textContent = '🎲 Starke Zufallsschwankung';
+                phaseEl.style.color = '#d97706';
+            } else if (n < 150) {
+                phaseEl.textContent = '📉 Kurve beruhigt sich langsam';
+                phaseEl.style.color = '#2563eb';
+            } else {
+                phaseEl.textContent = '🎯 Gesetz der großen Zahlen!';
+                phaseEl.style.color = '#059669';
+            }
+        }
+
+        /**
+         * BALKEN-DIAGRAMM RENDERN (SOLL-MARKIERUNG ERST NACH DEM AUFDECKEN)
+         */
+        function renderBarChart() {
+            const container = document.getElementById('barChartContainer');
+            const n = state.total;
+            const showTargets = state.isResolutionRevealed;
+
+            let bars = [];
+
+            if (state.chartView === 'phenotype') {
+                const purpleCount = state.countAA + state.countAa;
+                const pctPurple = n > 0 ? (purpleCount / n) * 100 : 0;
+                const pctWhite = n > 0 ? (state.countaa / n) * 100 : 0;
+
+                bars = [
+                    {
+                        label: `${getFlowerSVG('purple', 22)} Lila Blüten (AA oder Aa · mind. 1× Kopf)`,
+                        count: purpleCount,
+                        pct: pctPurple,
+                        target: 75.0,
+                        targetText: 'Soll: 75 % (3/4)',
+                        fillColor: '#a855f7',
+                        textColor: '#ffffff'
+                    },
+                    {
+                        label: `${getFlowerSVG('white', 22)} Weiße Blüten (aa · 2× Zahl)`,
+                        count: state.countaa,
+                        pct: pctWhite,
+                        target: 25.0,
+                        targetText: 'Soll: 25 % (1/4)',
+                        fillColor: '#94a3b8',
+                        textColor: '#0f172a'
+                    }
+                ];
+            } else {
+                const pctAA = n > 0 ? (state.countAA / n) * 100 : 0;
+                const pctAa = n > 0 ? (state.countAa / n) * 100 : 0;
+                const pctaa = n > 0 ? (state.countaa / n) * 100 : 0;
+
+                bars = [
+                    {
+                        label: `${getFlowerSVG('purple', 22)} Reinerbig Lila – AA (Kopf + Kopf)`,
+                        count: state.countAA,
+                        pct: pctAA,
+                        target: 25.0,
+                        targetText: 'Soll: 25 % (1/4)',
+                        fillColor: '#7c3aed',
+                        textColor: '#ffffff'
+                    },
+                    {
+                        label: `${getFlowerSVG('purple', 22)} Mischerbig Lila – Aa (Kopf + Zahl / Zahl + Kopf)`,
+                        count: state.countAa,
+                        pct: pctAa,
+                        target: 50.0,
+                        targetText: 'Soll: 50 % (2/4)',
+                        fillColor: '#c084fc',
+                        textColor: '#0f172a'
+                    },
+                    {
+                        label: `${getFlowerSVG('white', 22)} Reinerbig Weiß – aa (Zahl + Zahl)`,
+                        count: state.countaa,
+                        pct: pctaa,
+                        target: 25.0,
+                        targetText: 'Soll: 25 % (1/4)',
+                        fillColor: '#94a3b8',
+                        textColor: '#0f172a'
+                    }
+                ];
+            }
+
+            container.innerHTML = bars.map(b => `
+                <div class="bar-row">
+                    <div class="bar-info">
+                        <span style="display:flex; align-items:center; gap:0.4rem;">${b.label}</span>
+                        <span>${b.count.toLocaleString('de-DE')} (${b.pct.toFixed(1).replace('.', ',')} %)</span>
+                    </div>
+                    <div class="bar-track">
+                        ${showTargets ? `<div class="target-marker" style="left: ${b.target}%;" data-label="${b.targetText}"></div>` : ''}
+                        <div class="bar-fill" style="width: ${Math.min(100, b.pct)}%; background-color: ${b.fillColor}; color: ${b.textColor};">
+                            ${b.pct >= 12 ? b.pct.toFixed(1).replace('.', ',') + ' %' : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /**
+         * NATIVES HTML5-CANVAS-LINIENDIAGRAMM (75 %-ZIEL-LINIE ERST NACH DEM AUFDECKEN)
+         */
+        function drawHistoryChart() {
+            const canvas = document.getElementById('historyCanvas');
+            if (!canvas) return;
+
+            const legendHint = document.getElementById('chartLegendHint');
+            if (legendHint) {
+                legendHint.textContent = state.isResolutionRevealed
+                    ? 'Grüne Linie = 75 % Mendel-Sollwert (3 : 1)'
+                    : 'Orange Punkte = Eure 10 Klassendaten';
+                legendHint.style.color = state.isResolutionRevealed ? 'var(--emerald-dark)' : 'var(--text-muted)';
+            }
+
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = Math.max(300, (rect.width - 16) * dpr);
+            canvas.height = Math.max(220, (rect.height - 16) * dpr);
+
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            const w = canvas.width / dpr;
+            const h = canvas.height / dpr;
+
+            const pad = { top: 22, right: 26, bottom: 40, left: 54 };
+            const plotW = w - pad.left - pad.right;
+            const plotH = h - pad.top - pad.bottom;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Hintergrund-Raster (0 %, 25 %, 50 %, 75 %, 100 %)
+            ctx.font = '600 12px system-ui, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+
+            [0, 25, 50, 75, 100].forEach(val => {
+                const y = pad.top + plotH - (val / 100) * plotH;
+
+                ctx.strokeStyle = val === 50 ? '#cbd5e1' : '#e2e8f0';
+                ctx.lineWidth = val === 50 ? 1.5 : 1;
+                ctx.beginPath();
+                ctx.moveTo(pad.left, y);
+                ctx.lineTo(pad.left + plotW, y);
+                ctx.stroke();
+
+                const highlight75 = state.isResolutionRevealed && val === 75;
+                ctx.fillStyle = highlight75 ? '#065f46' : '#64748b';
+                ctx.font = highlight75 ? '800 12px system-ui, sans-serif' : '600 12px system-ui, sans-serif';
+                ctx.fillText(`${val} %`, pad.left - 8, y);
+            });
+
+            // 2. Smaragdgrüne Soll-Linie bei 75 % (erst sichtbar, wenn Auflösung aufgedeckt wurde)
+            if (state.isResolutionRevealed) {
+                const targetY = pad.top + plotH - (75 / 100) * plotH;
+                ctx.save();
+                ctx.strokeStyle = '#059669';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([8, 5]);
+                ctx.beginPath();
+                ctx.moveTo(pad.left, targetY);
+                ctx.lineTo(pad.left + plotW, targetY);
+                ctx.stroke();
+                ctx.restore();
+
+                ctx.fillStyle = '#065f46';
+                ctx.textAlign = 'left';
+                ctx.font = '800 12px system-ui, sans-serif';
+                ctx.fillText('Mendel-Erwartungswert: 75 % Lila (3 : 1)', pad.left + 8, targetY - 12);
+            }
+
+            // 3. Achsen & X-Achsen-Beschriftung
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(pad.left, pad.top);
+            ctx.lineTo(pad.left, pad.top + plotH);
+            ctx.lineTo(pad.left + plotW, pad.top + plotH);
+            ctx.stroke();
+
+            const maxN = Math.max(10, state.total);
+            ctx.fillStyle = '#475569';
+            ctx.textAlign = 'center';
+            ctx.font = '700 12px system-ui, sans-serif';
+            ctx.fillText('Anzahl der F2-Nachkommen / Doppel-Münzwürfe (n)', pad.left + plotW / 2, h - 8);
+
+            ctx.textAlign = 'left';
+            ctx.fillText('1', pad.left, pad.top + plotH + 16);
+            ctx.textAlign = 'right';
+            ctx.fillText(maxN.toLocaleString('de-DE'), pad.left + plotW, pad.top + plotH + 16);
+
+            // 4. Datenkurve zeichnen
+            if (state.history.length === 0) {
+                ctx.fillStyle = '#94a3b8';
+                ctx.textAlign = 'center';
+                ctx.font = '600 14px system-ui, sans-serif';
+                ctx.fillText('Übernehmt eure 10 Klassenwürfe oder startet den Zeitraffer...', pad.left + plotW / 2, pad.top + plotH / 2 + 12);
+                return;
+            }
+
+            // Hervorhebungszone für die ersten 10 Klassenversuche (Zufallsschwankungen)
+            const classPoints = state.history.filter(pt => pt.isClassData);
+            if (classPoints.length > 0 && maxN > 10) {
+                const x10 = pad.left + ((Math.min(10, maxN) - 1) / Math.max(1, maxN - 1)) * plotW;
+                ctx.fillStyle = 'rgba(245, 158, 11, 0.10)';
+                ctx.fillRect(pad.left, pad.top, Math.max(4, x10 - pad.left), plotH);
+            }
+
+            // Hauptkurve (Violett)
+            ctx.strokeStyle = '#7c3aed';
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+
+            state.history.forEach((pt, idx) => {
+                const x = pad.left + ((pt.n - 1) / Math.max(1, maxN - 1)) * plotW;
+                const y = pad.top + plotH - (pt.pct / 100) * plotH;
+                if (idx === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Punkte der ersten 10 Klassenversuche orange/gold hervorheben
+            classPoints.forEach(pt => {
+                const x = pad.left + ((pt.n - 1) / Math.max(1, maxN - 1)) * plotW;
+                const y = pad.top + plotH - (pt.pct / 100) * plotH;
+                ctx.fillStyle = '#d97706';
+                ctx.beginPath();
+                ctx.arc(x, y, 4.2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            });
+
+            // Aktuellen Endpunkt hervorheben
+            const lastPt = state.history[state.history.length - 1];
+            const lastX = pad.left + ((lastPt.n - 1) / Math.max(1, maxN - 1)) * plotW;
+            const lastY = pad.top + plotH - (lastPt.pct / 100) * plotH;
+
+            ctx.fillStyle = '#6d28d9';
+            ctx.beginPath();
+            ctx.arc(lastX, lastY, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        /**
+         * TOAST-NACHRICHT (STATT ALERT)
+         */
+        let toastTimeout = null;
+        function showToast(message) {
+            const box = document.getElementById('toastBox');
+            box.textContent = message;
+            box.classList.add('show');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                box.classList.remove('show');
+            }, 3400);
+        }
+
+        /**
+         * INITIALISIERUNG BEIM LADEN DER SEITE
+         */
+        function initStaticVisuals() {
+            const genP = document.getElementById('genPVisual');
+            const genF1 = document.getElementById('genF1Visual');
+            const genF2 = document.getElementById('genF2Visual');
+
+            if (genP) genP.innerHTML = `${getFlowerSVG('purple', 24)} <span>×</span> ${getFlowerSVG('white', 24)}`;
+            if (genF1) genF1.innerHTML = `${getFlowerSVG('purple', 24)} <span>×</span> ${getFlowerSVG('purple', 24)}`;
+            if (genF2) genF2.innerHTML = `${getFlowerSVG('purple', 24)} ${getFlowerSVG('purple', 24)} ${getFlowerSVG('purple', 24)} ${getFlowerSVG('white', 24)}`;
+
+            const pAA = document.getElementById('punnettAA');
+            const paA = document.getElementById('punnettaA');
+            const pAa = document.getElementById('punnettAa');
+            const paa = document.getElementById('punnettaa');
+
+            if (pAA) pAA.innerHTML = `${getFlowerSVG('purple', 22)}<div><strong>AA</strong> · Lila</div>`;
+            if (paA) paA.innerHTML = `${getFlowerSVG('purple', 22)}<div><strong>Aa</strong> · Lila</div>`;
+            if (pAa) pAa.innerHTML = `${getFlowerSVG('purple', 22)}<div><strong>Aa</strong> · Lila</div>`;
+            if (paa) paa.innerHTML = `${getFlowerSVG('white', 22)}<div><strong>aa</strong> · Weiß</div>`;
+        }
+
+        window.addEventListener('resize', () => {
+            drawHistoryChart();
+        });
+
+        window.onload = function () {
+            initStaticVisuals();
+            renderTenTokens();
+            updateUI();
+        };
+    </script>
+</body>
+</html>
